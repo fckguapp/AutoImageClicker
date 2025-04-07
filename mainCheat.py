@@ -10,6 +10,7 @@ val=0.5
 
 def clicking():
     global file_path
+    click_speed = val_speed.get()
     time.sleep(10)
     if file_path:
         autof = pyautogui.locateOnScreen(file_path, confidence=val)
@@ -17,6 +18,7 @@ def clicking():
         if autof is not None:
             while True:
                 pyautogui.click(autof, button="left")
+                time.sleep(click_speed)
 
 def upload_file():
     global file_path
@@ -29,8 +31,7 @@ def standart_clicker():
         mouse_pos = pyautogui.position()
         pyautogui.click(mouse_pos,button="left")
 def get_translation(rus_text, eng_text):
-    # Проверка состояния чекбокса для выбора языка
-    if language_var.get() == 1:  # 1 соответствует английскому
+    if language_var.get() == 1:
         return eng_text
     return rus_text
 def open_popup():
@@ -45,43 +46,34 @@ def open_popup():
 
 root = tk.Tk()
 root.title("AutoAutoClicker")
-
-# Переменная для чекбокса изменения языка
+root.geometry("500x500")
 language_var = tk.IntVar()
-
-# Чекбокс для переключения языка
 language_checkbox = tk.Checkbutton(root, text="English", variable=language_var, command=lambda: update_interface())
 language_checkbox.pack(pady=10, anchor="nw")
-
-# Кнопка запуска
+button_soveti = tk.Button(root, text=get_translation("Помощь", "Help"), command=open_popup)
+button_soveti.pack(pady=20, anchor="n")
 button_start = tk.Button(root, text=get_translation("Запуск", "Start"), command=clicking)
 button_start.pack(pady=20, anchor="center")
-
-# Кнопка загрузки изображения
 button_upload = tk.Button(root, text=get_translation("Загрузка изображения", "Upload Image"), command=upload_file)
 button_upload.pack(pady=20, anchor="s")
-
-# Ползунок для настройки
 val = tk.DoubleVar(value=0.5)
 scale = ttk.Scale(root, orient="horizontal", length=100, from_=0.5, to=1, variable=val)
 scale.pack(anchor="s")
-
-# Метка для ползунка
 label_scale = tk.Label(root, text=get_translation("Различие картинки (0,5 to 1)", "Image Difference (0.5 to 1)"), textvariable=val)
 label_scale.pack(pady=20, anchor="center")
-
-# Кнопка помощи
-button_soveti = tk.Button(root, text=get_translation("Помощь", "Help"), command=open_popup)
-button_soveti.pack(pady=20, anchor="se")
-
-# Горячая клавиша для стандартного кликера
 keyboard.add_hotkey('f5', standart_clicker)
-
+val_speed = tk.DoubleVar(value=0.1)  # Начальная скорость клика
+speed_scale = ttk.Scale(root, orient="horizontal", length=100, from_=0.1, to=1, variable=val_speed)
+speed_scale.pack(pady=10, anchor="s")
+label_speed_scale = ttk.Label(root,text = get_translation("Интервал между кликами", "Interval between clicking"))
+label_speed_scale.pack(pady=20,anchor="s")
+label_speed_tip = ttk.Label(root,textvariable=val_speed)
+label_speed_tip.pack(pady=20,anchor="s")
 def update_interface():
-    # Обновление интерфейса для отражения нового языка
     button_start.config(text=get_translation("Запуск", "Start"))
     button_upload.config(text=get_translation("Загрузка изображения", "Upload Image"))
     label_scale.config(text=get_translation("Различие картинки (0,5 to 1)", "Image Difference (0.5 to 1)"))
     button_soveti.config(text=get_translation("Помощь", "Help"))
+    label_speed_scale.config(text=get_translation("Интервал между кликами", "Interval between clicking"))
 
 root.mainloop()
